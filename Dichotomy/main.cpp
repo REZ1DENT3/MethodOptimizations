@@ -45,7 +45,7 @@ double dichotomy(tInfo info) {
 
 int main() {
 
-    tInfo info(-3, 7, 1E-4, 0.5);
+    tInfo info(-3, 7, 0.2, 0.5);
 
     double x = dichotomy(info);
 
