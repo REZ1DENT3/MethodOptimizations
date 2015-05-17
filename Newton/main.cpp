@@ -84,8 +84,7 @@ void Newton(tvecDouble hessian, tInfo &info) {
         k++;
 
     }
-    cout << "Количество итераций: " << k << endl;
-    cout << "Норма градиента: " << norma_gradienta << endl;
+    cout << norma_gradienta << endl;
 }
 
 int main() {
@@ -100,7 +99,7 @@ int main() {
 
     Newton(hessian, info);
 
-    cout << "Точка минимума:";
+    cout << "мин. точка:";
     cout << info.x0 << endl;
     cout << info.x1 << endl;
     system("pause");
