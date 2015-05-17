@@ -49,8 +49,8 @@ int main() {
 
     double x = dichotomy(info);
 
-    cout << "Точка минимума: " << x << endl;
-    cout << "Значение функции в точке минимума: " << f(x) << endl;
+    cout << "мин. точка: " << x << endl;
+    cout << "мин.: " << f(x) << endl;
 
     system("pause");
 
