@@ -71,7 +71,7 @@ double dichotomy(tInfo _info, tInfo info, tvecDouble dk) {
 }
 
 void newton_revson(tvecDouble hessian, tInfo &info) {
-    
+
     tvecDouble gradient(2), dk(2), newx(2);
 
     double norma_gradienta, tk;
@@ -88,7 +88,7 @@ void newton_revson(tvecDouble hessian, tInfo &info) {
 
         if (norma_gradienta > info.delta) {
 
-            dk[0] = rrr * (hessian.at(2) * gradient[0] + -hessian.at(1) * gradient[1]);
+            dk[0] = rrr * (hessian.at(2) * gradient[0] - hessian.at(1) * gradient[1]);
 
             dk[1] = rrr * (-hessian.at(1) * gradient[0] + hessian.at(0) * gradient[1]);
 
