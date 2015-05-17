@@ -68,6 +68,9 @@ void Newton(tvecDouble hessian, tInfo &info) {
                 (fabs(fun(newx[0], newx[1], 0) - fun(info.x0, info.x1, 0)) < info.eps)) {
 
                 if ((k - f) == 1) {
+                    info.x0 = newx[0];
+                    info.x1 = newx[1];
+                    k++;
                     break;
                 }
                 else {
@@ -76,6 +79,9 @@ void Newton(tvecDouble hessian, tInfo &info) {
             }
         }
         else {
+            info.x0 = newx[0];
+            info.x1 = newx[1];
+            k++;
             break;
         }
 
