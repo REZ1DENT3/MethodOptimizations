@@ -9,24 +9,24 @@ typedef vector<double> tvecDouble;
 
 struct tInfo {
 public:
-    tInfo(double a, double b, double delta, double eps) {
-        this->a = a;
-        this->b = b;
+    tInfo(double x0, double x1, double delta, double eps) {
+        this->x0 = x0;
+        this->x1 = x1;
         this->delta = delta;
         this->eps = eps;
     }
 
 public:
-    double a, b;
+    double x0, x1;
     double delta;
     double eps;
 };
 
 double fun(double x1, double x2, int flag) {
     /**
-     * 0 - ôóíêöèÿ
-     * 1 - ïðîèçâîäíàÿ ïî õ
-     * 2 - ïðîèçâîäíàÿ ïî ó.
+     * 0 - äã­ªæ¨ï
+     * 1 - ¯à®¨§¢®¤­ ï ¯® å
+     * 2 - ¯à®¨§¢®¤­ ï ¯® ã.
      */
     switch (flag) {
         case 0:
@@ -40,80 +40,69 @@ double fun(double x1, double x2, int flag) {
     }
 }
 
-const bool GesT = true;
+void Newton(tvecDouble hessian, tInfo &info) {
 
-double Gesse(int flag) {
-    switch (flag) {
-        case 0:
-            return 16;
-            break;
-        case 1:
-            return -1;
-            break;
-        case 2:
-            return 2;
-            break;
-        default:
-            break;
-    }
-}
+    double norma_gradienta;
 
-double x[2];
+    tvecDouble gradient(2), dk(2), newx(2);
 
-void metod(double E1, double E2) {
-    double norma_gradienta, gradient[2], dk[2], newx[2];
     int k = 0, f = -1;
-    bool g = true, fFinal = false;
-    while ((g) && (!fFinal)) {
-        gradient[0] = fun(x[0], x[1], 1);
-        gradient[1] = fun(x[0], x[1], 2);
+    double rrr = (-1) * (1 / (hessian.at(0) * hessian.at(2) - pow(hessian.at(1), 2)));
+
+    while (true) {
+
+        gradient[0] = fun(info.x0, info.x1, 1);
+        gradient[1] = fun(info.x0, info.x1, 2);
 
         norma_gradienta = sqrt(gradient[0] * gradient[0] + gradient[1] * gradient[1]);
 
-        if (norma_gradienta > E1) {
-            if (GesT) {
-                //dk=-1/|H|*(aljH)*gradient
-                dk[0] = (-1) * (1 / (Gesse(0) * Gesse(2) - pow(Gesse(1), 2))) *
-                        (Gesse(2) * gradient[0] + (-Gesse(1)) * gradient[1]);
-                dk[1] = (-1) * (1 / (Gesse(0) * Gesse(2) - pow(Gesse(1), 2))) *
-                        ((-Gesse(1)) * gradient[0] + Gesse(0) * gradient[1]);
+        if (norma_gradienta > info.delta) {
 
-                newx[0] = x[0] + dk[0];
-                newx[1] = x[1] + dk[1];
-            }
+            dk[0] = rrr * (hessian.at(2) * gradient[0] - hessian.at(1) * gradient[1]);
+            dk[1] = rrr * (-hessian.at(1) * gradient[0] + hessian.at(0) * gradient[1]);
 
-            if ((sqrt(pow(newx[0] - x[0], 2) + pow(newx[1] - x[1], 2)) < E2) &&
-                (fabs(fun(newx[0], newx[1], 0) - fun(x[0], x[1], 0)) < E2)) {
-                if ((k - f) == 1) { fFinal = true; }
-                else { f = k; }
+            newx[0] = info.x0 + dk[0];
+            newx[1] = info.x1 + dk[1];
+
+            if ((sqrt(pow(newx[0] - info.x0, 2) + pow(newx[1] - info.x1, 2)) < info.eps) &&
+                (fabs(fun(newx[0], newx[1], 0) - fun(info.x0, info.x1, 0)) < info.eps)) {
+
+                if ((k - f) == 1) {
+                    break;
+                }
+                else {
+                    f = k;
+                }
             }
         }
-        else
-            g = false;
-        x[0] = newx[0];
-        x[1] = newx[1];
+        else {
+            break;
+        }
+
+        info.x0 = newx[0];
+        info.x1 = newx[1];
         k++;
+
     }
-    cout << "Êîëè÷åñòâî èòåðàöèé: " << k << endl;
-    cout << "Íîðìà ãðàäèåíòà: " << norma_gradienta << endl;
+    cout << "Š®«¨ç¥áâ¢® ¨â¥à æ¨©: " << k << endl;
+    cout << "®à¬  £à ¤¨¥­â : " << norma_gradienta << endl;
 }
 
 int main() {
-    setlocale(LC_ALL, "Russian");
-    double E1, E2;
-    cout << "x0[1]=";
-    cin >> x[0];
-    cout << "x0[2]=";
-    cin >> x[1];
-    cout << "E1=";
-    cin >> E1;
-    cout << "E2=";
-    cin >> E2;
-    metod(E1, E2);
 
-    cout << "Òî÷êà ìèíèìóìà:";
-    cout << x[0] << endl;
-    cout << x[1] << endl;
+    tvecDouble hessian;
+
+    hessian.push_back(16);
+    hessian.push_back(-1);
+    hessian.push_back(2);
+
+    tInfo info(2, 2, 0.2, 0.5);
+
+    Newton(hessian, info);
+
+    cout << "’®çª  ¬¨­¨¬ã¬ :";
+    cout << info.x0 << endl;
+    cout << info.x1 << endl;
     system("pause");
 
     return 0;
