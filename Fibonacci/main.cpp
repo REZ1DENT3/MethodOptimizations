@@ -7,16 +7,15 @@ using namespace std;
 
 typedef vector<long> tvecInt;
 
-tvecInt fib;
-
 struct tInfo {
 public:
-tInfo(double a, double b, double delta, double eps) {
-    this->a = a;
-    this->b = b;
-    this->delta = delta;
-    this->eps = eps;
-}
+    tInfo(double a, double b, double delta, double eps) {
+        this->a = a;
+        this->b = b;
+        this->delta = delta;
+        this->eps = eps;
+    }
+
 public:
     double a, b;
     double delta;
@@ -28,11 +27,12 @@ double f(double x) {
 }
 
 double fibonacci(tvecInt fib, tInfo info) {
+    unsigned int n = fib.size() - 1;
     double x, y, k = 0;
-    unsigned int n = fib.size();
-    x = info.a + (info.b - info.a) * fib.at(n - 2) / f(n);
+    x = info.a + (info.b - info.a) * fib.at(n - 2) / fib.at(n);
     y = info.a + info.b - x;
-    while (fabs(info.a - info.b) >= 2 * info.eps) {
+    double two_eps = 2 * info.eps;
+    while (fabs(info.a - info.b) >= two_eps) {
         if (f(x) < f(y)) {
             info.b = y;
             y = x;
@@ -58,6 +58,7 @@ double fibonacci(tvecInt fib, tInfo info) {
         else {
             k++;
         }
+
     }
 
     return (info.a + info.b) / 2;
@@ -67,6 +68,7 @@ int main() {
 
     tInfo info(-3, 7, 0.2, 0.5);
 
+    tvecInt fib;
     fib.push_back(1); // 0
     fib.push_back(1); // 1
 
@@ -84,7 +86,7 @@ int main() {
     cout << "мин. точка: " << x << endl;
     cout << "мин.: " << f(x) << endl;
 
-    system ("PAUSE");
+    system("PAUSE");
 
     return 0;
 }
