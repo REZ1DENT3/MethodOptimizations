@@ -5,7 +5,7 @@
 
 using namespace std;
 
-typedef vector<long> tvecInt;
+typedef vector<double> tvecDouble;
 
 struct tInfo {
 public:
