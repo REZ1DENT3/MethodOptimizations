@@ -9,15 +9,15 @@ typedef vector<double> tvecDouble;
 
 struct tInfo {
 public:
-    tInfo(double a, double b, double delta, double eps) {
-        this->a = a;
-        this->b = b;
+    tInfo(double x0, double x1, double delta, double eps) {
+        this->x0 = x0;
+        this->x1 = x1;
         this->delta = delta;
         this->eps = eps;
     }
 
 public:
-    double a, b;
+    double x0, x1;
     double delta;
     double eps;
 };
@@ -40,57 +40,67 @@ double fun(double x1, double x2, int flag) {
     }
 }
 
+double dichotomy(tInfo _info, tInfo info, tvecDouble dk) {
 
-double dichotomy(tInfo info, double x[2], double dk[2]) {
-    double s, x0, y0, fx[2], fy[2];
-    double two_eps = 2 * info.eps;
-    while ((info.b - info.a) >= two_eps) {
-        s = (info.b - info.a) / 20;
-        x0 = (info.a + info.b - s) / 2;
-        y0 = (info.a + info.b + s) / 2;
-        fx[0] = x[0] - x0 * dk[0];
-        fx[1] = x[1] - x0 * dk[1];
-        fy[0] = x[0] - y0 * dk[0];
-        fy[1] = x[1] - y0 * dk[1];
+    tvecDouble fx(2), fy(2);
+
+    double x0, y0;
+    double two_eps = 2 * _info.eps;
+
+    while ((_info.x1 - _info.x0) >= two_eps) {
+
+        _info.delta = (_info.x1 - _info.x0) / 20;
+        x0 = (_info.x0 + _info.x1 - _info.delta) / 2;
+        y0 = (_info.x0 + _info.x1 + _info.delta) / 2;
+
+        fx[0] = info.x0 - x0 * dk[0];
+        fx[1] = info.x1 - x0 * dk[1];
+        fy[0] = info.x0 - y0 * dk[0];
+        fy[1] = info.x1 - y0 * dk[1];
+
         if ((fun(fx[0], fx[1], 0)) > (fun(fy[0], fy[1], 0))) {
-            info.a = x0;
+            _info.x0 = x0;
         }
         else {
-            info.b = y0;
+            _info.x1 = y0;
         }
     }
-    return (info.a + info.b) / 2;
+
+    return (_info.x0 + _info.x1) / 2;
+
 }
 
-double x[2];
+void steepest_descent(tInfo &info) {
 
-void steepest_descent(tInfo info) {
-    double norma_grad, norma_grad_pred, l, grad[2], newx[2];
-    int k = 0; //шаг 2
+    tvecDouble grad(2), newx(2);
+    double norma_grad, l;
+    int k = 0;
     int f = -1;
-    bool g = true, fFinal = false;
-    while ((g) && (!fFinal)) {
+    while (true) {
 
-        grad[0] = fun(x[0], x[1], 1);
-        grad[1] = fun(x[0], x[1], 2);
+        grad[0] = fun(info.x0, info.x1, 1);
+        grad[1] = fun(info.x0, info.x1, 2);
 
-        norma_grad = sqrt(grad[0] * grad[0] + grad[1] * grad[1]);
+        norma_grad = sqrt(pow(grad[0], 2) + pow(grad[1], 2));
 
         if (norma_grad > info.delta) {
 
             tInfo _info(-1, 1, 0, 1E-5);
 
-            l = dichotomy(_info, x, grad);
+            l = dichotomy(_info, info, grad);
 
-            newx[0] = x[0] - l * grad[0];
+            newx[0] = info.x0 - l * grad[0];
+            newx[1] = info.x1 - l * grad[1];
 
-            newx[1] = x[1] - l * grad[1];
-
-            if ((sqrt(pow(newx[0] - x[0], 2) + pow(newx[1] - x[1], 2)) < info.eps) &&
-                (fabs(fun(newx[0], newx[1], 0) - fun(x[0], x[1], 0)) < info.eps)) {
+            if ((sqrt(pow(newx[0] - info.x0, 2) + pow(newx[1] - info.x1, 2)) < info.eps) &&
+                (fabs(fun(newx[0], newx[1], 0) - fun(info.x0, info.x1, 0)) < info.eps)) {
 
                 if ((k - f) == 1) {
-                    fFinal = true;
+
+                    info.x0 = newx[0];
+                    info.x1 = newx[1];
+                    k++;
+                    break;
                 }
                 else {
                     f = k;
@@ -98,35 +108,29 @@ void steepest_descent(tInfo info) {
             }
         }
         else {
-            g = false;
+
+            info.x0 = newx[0];
+            info.x1 = newx[1];
+            k++;
+            break;
         }
-        x[0] = newx[0];
-        x[1] = newx[1];
+        info.x0 = newx[0];
+        info.x1 = newx[1];
         k++;
     }
-    cout << "Количество итераций: " << k << endl;
-    cout << "Норма градиента: " << norma_grad << endl;
+
 }
 
 
 int main() {
 
-    double e, s;
-
-    tInfo info(0, 0, 0.2, 0.5);
-
-    cin >> x[0];
-    cin >> x[1];
-//    cout << "s=";
-//    cin >> s;
-//    cout << "e=";
-//    cin >> e;
+    tInfo info(2, 2, 0.5, 0.2);
 
     steepest_descent(info);
 
-    cout << "Точка минимума:" << endl;
-    cout << x[0] << endl;
-    cout << x[1] << endl;
+    cout << "мин. точка:" << endl;
+    cout << info.x0 << endl;
+    cout << info.x1 << endl;
 
     system("pause");
 
